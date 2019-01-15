@@ -1,12 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Ligh-ting control panel</title>
+    <link rel="stylesheet" href="css/materialize.min.css">
 </head>
+
 <body>
-    <h1>ELO KurWA</h1>
+    <nav>
+        <div class="nav-wrapper amber">
+            <a class="brand-logo center white-text">Ligh-ting Control Panel</a>
+        </div>
+    </nav>
+
+    <table>
+        <thead class="yellow lighten-3">
+            <tr>
+                <th class="center-align">ID</th>
+                <th class="center-align">Light Status</th>
+                <th class="center-align">Dusk Sensor Readings</th>
+                <th class="center-align">Threshold</th>
+                <th class="center-align">Mode</th>
+                <th class="center-align">Turn On Time</th>
+                <th class="center-align">Turn Off Time</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script type="text/javascript" src="js/materialize.min.js"></script>
+    <script>
+        const electron = require('electron')
+        const { ipcRenderer } = electron
+        const tbody = document.querySelector('tbody')
+        ipcRenderer.on('light:add', function (e, light) {
+
+            const tr = document.createElement('tr')
+            //id
+            const idTd = document.createElement('td')
+            idTd.className = 'center-align'
+            idTd.appendChild(document.createTextNode(light.id))
+
+            //switch
+            const switchTd = document.createElement('td')
+            switchTd.className = 'center-align'
+            const switchContainer = document.createElement('div')
+            switchContainer.className = 'col s1'
+            const lightSwitch = document.createElement('div')
+            lightSwitch.className = 'switch'
+            const switchLabel = document.createElement('label')
+            const switchInput = document.createElement('input')
+            switchInput.type = 'checkbox'
+            switchInput.checked = light.led
+            const switchSpan = document.createElement('span')
+            switchSpan.className = 'lever'
+            switchLabel.appendChild(document.createTextNode('Off '))
+            switchLabel.appendChild(switchInput)
+            switchLabel.appendChild(switchSpan)
+            switchLabel.appendChild(document.createTextNode(' On'))
+            lightSwitch.appendChild(switchLabel)
+            switchContainer.appendChild(lightSwitch)
+            switchTd.appendChild(lightSwitch)
+
+            //duskSensorReadings
+            const duskSensorTd = document.createElement('td')
+            duskSensorTd.className = 'center-align'
+            duskSensorTd.appendChild(document.createTextNode(light.duskSensorReadings))
+
+            //duskThreshold
+            const duskThresholdTd = document.createElement('td')
+            duskThresholdTd.className = 'center-align'
+            duskThresholdTd.appendChild(document.createTextNode(light.duskThreshold))
+
+            //mode select
+            const modeSelectTd = document.createElement('td')
+            modeSelectTd.className = 'center-align'
+            const selectDiv = document.createElement('div')
+            selectDiv.className = 'input-field col s1'
+            const select = document.createElement('select')
+            const duskOnlyOpt = document.createElement('option')
+
+            duskOnlyOpt.value = 'DUSK_ONLY'
+            duskOnlyOpt.appendChild(document.createTextNode('Dusk only'))
+            const timeOnlyOpt = document.createElement('option')
+            timeOnlyOpt.value = 'TIME_ONLY'
+            timeOnlyOpt.appendChild(document.createTextNode('Time only'))
+            const duskOverTimeOpt = document.createElement('option')
+            duskOverTimeOpt.value = 'DUSK_OVER_TIME'
+            duskOverTimeOpt.appendChild(document.createTextNode('Dusk over time'))
+            const overrideOpt = document.createElement('option')
+            overrideOpt.value = 'OVERRIDE'
+            overrideOpt.appendChild(document.createTextNode('Override'))
+            if (light.mode == 'DUSK_ONLY') {
+                duskOnlyOpt.selected = true
+            } else if (light.mode == 'TIME_ONLY') {
+                timeOnlyOpt.selected = true
+            } else if (light.mode == 'DUSK_OVER_TIME') {
+                duskOverTimeOpt.selected = true
+            } else {
+                overrideOpt.selected = true
+            }
+            select.appendChild(duskOnlyOpt)
+            select.appendChild(timeOnlyOpt)
+            select.appendChild(duskOverTimeOpt)
+            select.appendChild(overrideOpt)
+            select.se
+            selectDiv.appendChild(select)
+            modeSelectTd.appendChild(selectDiv)
+
+            //TurnOnTime
+            const turnOnTimeTd = document.createElement('td')
+            turnOnTimeTd.className = 'center-align'
+            const timeOnPicker = document.createElement('input')
+            timeOnPicker.type = 'text'
+            timeOnPicker.className = 'timepicker no-autoinit'
+            turnOnTimeTd.appendChild(timeOnPicker)
+
+            //TurnOffTime
+            const turnOffTimeTd = document.createElement('td')
+            turnOffTimeTd.className = 'center-align'
+            const timeOffPicker = document.createElement('input')
+            timeOffPicker.type = 'text'
+            timeOffPicker.className = ' timepicker no-autoinit'
+            turnOffTimeTd.appendChild(timeOffPicker)
+
+
+
+
+
+            tr.appendChild(idTd)
+            tr.appendChild(switchTd)
+            tr.appendChild(duskSensorTd)
+            tr.appendChild(duskThresholdTd)
+            tr.appendChild(modeSelectTd)
+            tr.appendChild(turnOnTimeTd)
+            tr.appendChild(turnOffTimeTd)
+            tbody.appendChild(tr)
+
+            M.AutoInit()
+
+
+            var elems = document.querySelectorAll('.timepicker');
+            var instances = M.Timepicker.init(elems, { twelveHour: false });
+
+        })
+
+
+
+    </script>
 </body>
+
 </html>
