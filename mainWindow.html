@@ -11,18 +11,18 @@
 
 <body>
     <nav>
-        <div class="nav-wrapper amber">
+        <div class="nav-wrapper teal darken-3">
             <a class="brand-logo center white-text">Ligh-ting Control Panel</a>
         </div>
     </nav>
 
     <table>
-        <thead class="yellow lighten-3">
+        <thead class="teal lighten-2">
             <tr>
                 <th class="center-align">ID</th>
                 <th class="center-align">Light Status</th>
                 <th class="center-align">Dusk Sensor Readings</th>
-                <th class="center-align">Threshold</th>
+                <th class="center-align">Dusk Threshold</th>
                 <th class="center-align">Mode</th>
                 <th class="center-align">Turn On Time</th>
                 <th class="center-align">Turn Off Time</th>
@@ -73,7 +73,12 @@
             //duskThreshold
             const duskThresholdTd = document.createElement('td')
             duskThresholdTd.className = 'center-align'
-            duskThresholdTd.appendChild(document.createTextNode(light.duskThreshold))
+            const duskThresholdInput = document.createElement('input')
+            duskThresholdInput.type = 'number'
+            duskThresholdInput.min = 0
+            duskThresholdInput.max = 1023
+            duskThresholdInput.value = light.duskThreshold
+            duskThresholdTd.appendChild(duskThresholdInput)
 
             //mode select
             const modeSelectTd = document.createElement('td')
@@ -115,6 +120,7 @@
             const turnOnTimeTd = document.createElement('td')
             turnOnTimeTd.className = 'center-align'
             const timeOnPicker = document.createElement('input')
+            timeOnPicker.value = light.turnOnTime.hour + ':' + light.turnOnTime.minute
             timeOnPicker.type = 'text'
             timeOnPicker.className = 'timepicker no-autoinit'
             turnOnTimeTd.appendChild(timeOnPicker)
@@ -123,13 +129,10 @@
             const turnOffTimeTd = document.createElement('td')
             turnOffTimeTd.className = 'center-align'
             const timeOffPicker = document.createElement('input')
+            timeOffPicker.value = light.turnOffTime.hour + ':' + light.turnOffTime.minute
             timeOffPicker.type = 'text'
             timeOffPicker.className = ' timepicker no-autoinit'
             turnOffTimeTd.appendChild(timeOffPicker)
-
-
-
-
 
             tr.appendChild(idTd)
             tr.appendChild(switchTd)
@@ -139,10 +142,7 @@
             tr.appendChild(turnOnTimeTd)
             tr.appendChild(turnOffTimeTd)
             tbody.appendChild(tr)
-
             M.AutoInit()
-
-
             var elems = document.querySelectorAll('.timepicker');
             var instances = M.Timepicker.init(elems, { twelveHour: false });
 
