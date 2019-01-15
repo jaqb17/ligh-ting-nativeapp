@@ -42,6 +42,7 @@
             //id
             const idTd = document.createElement('td')
             idTd.className = 'center-align'
+            idTd.id = 'id'+light.id
             idTd.appendChild(document.createTextNode(light.id))
 
             //switch
@@ -55,6 +56,7 @@
             const switchInput = document.createElement('input')
             switchInput.type = 'checkbox'
             switchInput.checked = light.led
+            switchInput.id = 'switch'+light.id
             const switchSpan = document.createElement('span')
             switchSpan.className = 'lever'
             switchLabel.appendChild(document.createTextNode('Off '))
@@ -68,12 +70,14 @@
             //duskSensorReadings
             const duskSensorTd = document.createElement('td')
             duskSensorTd.className = 'center-align'
+            duskSensorTd.id = 'duskSensor'+light.id
             duskSensorTd.appendChild(document.createTextNode(light.duskSensorReadings))
 
             //duskThreshold
             const duskThresholdTd = document.createElement('td')
             duskThresholdTd.className = 'center-align'
             const duskThresholdInput = document.createElement('input')
+            duskThresholdInput.id = 'duskThreshold'+light.id
             duskThresholdInput.type = 'number'
             duskThresholdInput.min = 0
             duskThresholdInput.max = 1023
@@ -86,8 +90,8 @@
             const selectDiv = document.createElement('div')
             selectDiv.className = 'input-field col s1'
             const select = document.createElement('select')
+            select.id = 'modeSelect'+light.id
             const duskOnlyOpt = document.createElement('option')
-
             duskOnlyOpt.value = 'DUSK_ONLY'
             duskOnlyOpt.appendChild(document.createTextNode('Dusk only'))
             const timeOnlyOpt = document.createElement('option')
@@ -122,6 +126,7 @@
             const timeOnPicker = document.createElement('input')
             timeOnPicker.value = light.turnOnTime.hour + ':' + light.turnOnTime.minute
             timeOnPicker.type = 'text'
+            timeOnPicker.id = 'timeOn'+light.id
             timeOnPicker.className = 'timepicker no-autoinit'
             turnOnTimeTd.appendChild(timeOnPicker)
 
@@ -131,6 +136,7 @@
             const timeOffPicker = document.createElement('input')
             timeOffPicker.value = light.turnOffTime.hour + ':' + light.turnOffTime.minute
             timeOffPicker.type = 'text'
+            timeOffPicker.id = 'timeOff'+light.id
             timeOffPicker.className = ' timepicker no-autoinit'
             turnOffTimeTd.appendChild(timeOffPicker)
 

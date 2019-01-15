@@ -2,12 +2,24 @@ const electron = require('electron')
 const url = require('url')
 const path = require('path')
 const shell = require('electron').shell
+const firebase = require('firebase')
 
 const { app, BrowserWindow, Menu, ipcMain } = electron
-
+// const firebaseApp = firebase.initializeApp({
+//     apiKey: "AIzaSyB9yMeGp9hyzhInZgDiCKi9ba1lT5orz30",
+//     authDomain: "light-ting.firebaseapp.com",
+//     databaseURL: "https://light-ting.firebaseio.com",
+//     projectId: "light-ting",
+//     storageBucket: "",
+//     messagingSenderId: "131433570336"
+// })
 //process.env.NODE_ENV = 'production'
 
 let mainWindow
+
+function addLight(light) {
+    mainWindow.webContents.send('light:add', light)
+}
 
 var mainMenuTemplate = [{
     label: 'Ligh-ting',
@@ -16,7 +28,7 @@ var mainMenuTemplate = [{
             label: 'Update',
             click() {
                 const light = {
-                    id: 1,
+                    id: 123,
                     duskSensorReadings: 0,
                     duskThreshold: 544,
                     led: true,
@@ -31,7 +43,6 @@ var mainMenuTemplate = [{
                     }
                 }
                 mainWindow.webContents.send('light:add', light)
-                console.log('send from update')
             }
         },
         {
