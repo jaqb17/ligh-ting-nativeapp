@@ -5,14 +5,14 @@ const shell = require('electron').shell
 const firebase = require('firebase')
 
 const { app, BrowserWindow, Menu, ipcMain } = electron
-// const firebaseApp = firebase.initializeApp({
-//     apiKey: "AIzaSyB9yMeGp9hyzhInZgDiCKi9ba1lT5orz30",
-//     authDomain: "light-ting.firebaseapp.com",
-//     databaseURL: "https://light-ting.firebaseio.com",
-//     projectId: "light-ting",
-//     storageBucket: "",
-//     messagingSenderId: "131433570336"
-// })
+const firebaseApp = firebase.initializeApp({
+    apiKey: "AIzaSyB9yMeGp9hyzhInZgDiCKi9ba1lT5orz30",
+    authDomain: "light-ting.firebaseapp.com",
+    databaseURL: "https://light-ting.firebaseio.com",
+    projectId: "light-ting",
+    storageBucket: "",
+    messagingSenderId: "131433570336"
+})
 //process.env.NODE_ENV = 'production'
 
 let mainWindow

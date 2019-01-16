@@ -9,7 +9,7 @@
   "author": "Jakub Sipika",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^4.0.1",
+    "electron": "^3.0.14",
     "firebase": "^5.7.3"
   }
 }
