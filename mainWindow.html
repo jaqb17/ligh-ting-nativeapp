@@ -42,7 +42,7 @@
             //id
             const idTd = document.createElement('td')
             idTd.className = 'center-align'
-            idTd.id = 'id'+light.id
+            idTd.id = 'id' + light.id
             idTd.appendChild(document.createTextNode(light.id))
 
             //switch
@@ -56,7 +56,10 @@
             const switchInput = document.createElement('input')
             switchInput.type = 'checkbox'
             switchInput.checked = light.led
-            switchInput.id = 'switch'+light.id
+            switchInput.id = 'switch' + light.id
+            switchInput.addEventListener('change', function () {
+                ipcRenderer.send('switchChange', switchInput.id, switchInput.checked)
+            })
             const switchSpan = document.createElement('span')
             switchSpan.className = 'lever'
             switchLabel.appendChild(document.createTextNode('Off '))
@@ -70,18 +73,21 @@
             //duskSensorReadings
             const duskSensorTd = document.createElement('td')
             duskSensorTd.className = 'center-align'
-            duskSensorTd.id = 'duskSensor'+light.id
+            duskSensorTd.id = 'duskSensor' + light.id
             duskSensorTd.appendChild(document.createTextNode(light.duskSensorReadings))
 
             //duskThreshold
             const duskThresholdTd = document.createElement('td')
             duskThresholdTd.className = 'center-align'
             const duskThresholdInput = document.createElement('input')
-            duskThresholdInput.id = 'duskThreshold'+light.id
+            duskThresholdInput.id = 'duskThreshold' + light.id
             duskThresholdInput.type = 'number'
             duskThresholdInput.min = 0
             duskThresholdInput.max = 1023
             duskThresholdInput.value = light.duskThreshold
+            duskThresholdInput.addEventListener('change', function () {
+                ipcRenderer.send('thresholdChange', duskSensorTd.id, duskThresholdInput.value)
+            })
             duskThresholdTd.appendChild(duskThresholdInput)
 
             //mode select
@@ -90,7 +96,7 @@
             const selectDiv = document.createElement('div')
             selectDiv.className = 'input-field col s1'
             const select = document.createElement('select')
-            select.id = 'modeSelect'+light.id
+            select.id = 'modeSelect' + light.id
             const duskOnlyOpt = document.createElement('option')
             duskOnlyOpt.value = 'DUSK_ONLY'
             duskOnlyOpt.appendChild(document.createTextNode('Dusk only'))
@@ -116,7 +122,9 @@
             select.appendChild(timeOnlyOpt)
             select.appendChild(duskOverTimeOpt)
             select.appendChild(overrideOpt)
-            select.se
+            select.addEventListener('change', function () {
+                ipcRenderer.send('modeChange', select.id, select.value)
+            })
             selectDiv.appendChild(select)
             modeSelectTd.appendChild(selectDiv)
 
@@ -126,8 +134,13 @@
             const timeOnPicker = document.createElement('input')
             timeOnPicker.value = light.turnOnTime.hour + ':' + light.turnOnTime.minute
             timeOnPicker.type = 'text'
-            timeOnPicker.id = 'timeOn'+light.id
+            timeOnPicker.id = 'timeOn' + light.id
             timeOnPicker.className = 'timepicker no-autoinit'
+            timeOnPicker.addEventListener('change', function () {
+                var timeArray = timeOnPicker.value.split(':')
+                var time = { hour: timeArray[0], minute: timeArray[1] }
+                ipcRenderer.send('timeOnChange', timeOnPicker.id, time)
+            })
             turnOnTimeTd.appendChild(timeOnPicker)
 
             //TurnOffTime
@@ -136,8 +149,13 @@
             const timeOffPicker = document.createElement('input')
             timeOffPicker.value = light.turnOffTime.hour + ':' + light.turnOffTime.minute
             timeOffPicker.type = 'text'
-            timeOffPicker.id = 'timeOff'+light.id
+            timeOffPicker.id = 'timeOff' + light.id
             timeOffPicker.className = ' timepicker no-autoinit'
+            timeOffPicker.addEventListener('change', function () {
+                var timeArray = timeOffPicker.value.split(':')
+                var time = { hour: timeArray[0], minute: timeArray[1] }
+                ipcRenderer.send('timeOffChange', timeOffPicker.id, time)
+            })
             turnOffTimeTd.appendChild(timeOffPicker)
 
             tr.appendChild(idTd)
@@ -154,7 +172,15 @@
 
         })
 
+        ipcRenderer.on('light:update', function (e, light) {
+            document.getElementById('switch' + light.id).checked = light.led
+            document.getElementById('duskSensor' + light.id).innerHTML = light.duskSensorReadings
+            document.getElementById('duskThreshold' + light.id).value = light.duskThreshold
+            document.getElementById('modeSelect' + light.id).value = light.mode
+            document.getElementById('timeOn' + light.id).value = light.turnOnTime.hour + ':' + light.turnOnTime.minute
+            document.getElementById('timeOff' + light.id).value = light.turnOffTime.hour + ':' + light.turnOffTime.minute
 
+        })
 
     </script>
 </body>

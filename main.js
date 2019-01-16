@@ -2,6 +2,7 @@ const electron = require('electron')
 const url = require('url')
 const path = require('path')
 const shell = require('electron').shell
+const ipc = require('electron').ipcMain
 const firebase = require('firebase')
 
 const { app, BrowserWindow, Menu, ipcMain } = electron
@@ -13,12 +14,23 @@ const firebaseApp = firebase.initializeApp({
     storageBucket: "",
     messagingSenderId: "131433570336"
 })
+
+var database = firebase.database()
+
 //process.env.NODE_ENV = 'production'
 
 let mainWindow
 
 function addLight(light) {
     mainWindow.webContents.send('light:add', light)
+}
+
+function updateLight(light) {
+    mainWindow.webContents.send('light:update', light)
+}
+
+function getLightsFromDBToMainWindow() {
+
 }
 
 var mainMenuTemplate = [{
@@ -28,7 +40,7 @@ var mainMenuTemplate = [{
             label: 'Update',
             click() {
                 const light = {
-                    id: 123,
+                    id: 213,
                     duskSensorReadings: 0,
                     duskThreshold: 544,
                     led: true,
@@ -42,7 +54,28 @@ var mainMenuTemplate = [{
                         minute: 33
                     }
                 }
-                mainWindow.webContents.send('light:add', light)
+                addLight(light)
+            }
+        },
+        {
+            label: 'Update2',
+            click() {
+                const light = {
+                    id: 123,
+                    duskSensorReadings: 2,
+                    duskThreshold: 222,
+                    led: false,
+                    mode: 'TIME_ONLY',
+                    turnOffTime: {
+                        hour: 12,
+                        minute: 12
+                    },
+                    turnOnTime: {
+                        hour: 13,
+                        minute: 13
+                    }
+                }
+                updateLight(light)
             }
         },
         {
@@ -102,3 +135,25 @@ app.on('ready', function () {
 
 })
 
+ipc.on('switchChange', function (event, id, value) {
+
+    database.ref('/lights/' + String(id).replace(/^\D+/g, '') + '/led/').set(value)
+})
+
+ipc.on('thresholdChange', function (event, id, value) {
+    database.ref('/lights/' + String(id).replace(/^\D+/g, '') + '/duskThreshold/').set(value)
+})
+
+ipc.on('modeChange', function (event, id, value) {
+    database.ref('/lights/' + String(id).replace(/^\D+/g, '') + '/mode/').set(value)
+})
+
+ipc.on('timeOnChange', function (event, id, value) {
+    database.ref('/lights/' + String(id).replace(/^\D+/g, '') + '/turnOnTime/hour/').set(value.hour)
+    database.ref('/lights/' + String(id).replace(/^\D+/g, '') + '/turnOnTime/minute/').set(value.minute)
+})
+
+ipc.on('timeOffChange', function (event, id, value) {
+    database.ref('/lights/' + String(id).replace(/^\D+/g, '') + '/turnOffTime/hour/').set(value.hour)
+    database.ref('/lights/' + String(id).replace(/^\D+/g, '') + '/turnOffTime/minute/').set(value.minute)
+})
