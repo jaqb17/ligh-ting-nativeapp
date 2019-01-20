@@ -39,6 +39,7 @@
         ipcRenderer.on('light:add', function (e, light) {
 
             const tr = document.createElement('tr')
+            tr.id = 'tr' + light.id
             //id
             const idTd = document.createElement('td')
             idTd.className = 'center-align'
@@ -96,6 +97,7 @@
             const selectDiv = document.createElement('div')
             selectDiv.className = 'input-field col s1'
             const select = document.createElement('select')
+            select.className = 'browser-default'
             select.id = 'modeSelect' + light.id
             const duskOnlyOpt = document.createElement('option')
             duskOnlyOpt.value = 'DUSK_ONLY'
@@ -182,6 +184,9 @@
 
         })
 
+        ipcRenderer.on('light:remove', function (e, id) {
+            document.getElementById('tr' + id).remove()
+        })
     </script>
 </body>
 

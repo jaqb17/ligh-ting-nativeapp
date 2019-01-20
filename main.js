@@ -17,65 +17,89 @@ const firebaseApp = firebase.initializeApp({
 
 var database = firebase.database()
 
+
+var loadedIds = new Array();
 //process.env.NODE_ENV = 'production'
 
 let mainWindow
-
-function addLight(light) {
-    mainWindow.webContents.send('light:add', light)
-}
 
 function updateLight(light) {
     mainWindow.webContents.send('light:update', light)
 }
 
-function getLightsFromDBToMainWindow() {
+function addLight(light) {
+    loadedIds.push(light.id)
+    database.ref('/lights/' + light.id + '/').on('value', function (snapshot) {
+        var updatedlight = {
+            id: light.id,
+            duskSensorReadings: snapshot.val().duskSensorReadings,
+            duskThreshold: snapshot.val().duskThreshold,
+            led: snapshot.val().led,
+            mode: snapshot.val().mode,
+            turnOffTime: {
+                hour: snapshot.val().turnOffTime.hour,
+                minute: snapshot.val().turnOffTime.minute
+            },
+            turnOnTime: {
+                hour: snapshot.val().turnOnTime.hour,
+                minute: snapshot.val().turnOnTime.minute
+            }
+        }
+        updateLight(updatedlight)
+    })
+    mainWindow.webContents.send('light:add', light)
 
 }
+
+
+
+function clearLightsFromMainWindow() {
+    for (key in loadedIds) {
+        mainWindow.webContents.send('light:remove', loadedIds[key])
+    }
+    loadedIds.length = 0
+}
+
+function getLightsFromDBToMainWindow() {
+    database.ref('/lights/').once('value').then(function (snapshot) {
+        var lights = snapshot.val()
+        for (var key in lights) {
+            var light = {
+                id: key,
+                duskSensorReadings: lights[key].duskSensorReadings,
+                duskThreshold: lights[key].duskThreshold,
+                led: lights[key].led,
+                mode: lights[key].mode,
+                turnOffTime: {
+                    hour: lights[key].turnOffTime.hour,
+                    minute: lights[key].turnOffTime.minute
+                },
+                turnOnTime: {
+                    hour: lights[key].turnOnTime.hour,
+                    minute: lights[key].turnOnTime.minute
+                }
+            }
+            addLight(light)
+        }
+    })
+}
+
+
 
 var mainMenuTemplate = [{
     label: 'Ligh-ting',
     submenu: [
         {
-            label: 'Update',
+            label: 'Update from DB',
             click() {
-                const light = {
-                    id: 213,
-                    duskSensorReadings: 0,
-                    duskThreshold: 544,
-                    led: true,
-                    mode: 'OVERRIDE',
-                    turnOffTime: {
-                        hour: 23,
-                        minute: 37
-                    },
-                    turnOnTime: {
-                        hour: 23,
-                        minute: 33
-                    }
-                }
-                addLight(light)
+                clearLightsFromMainWindow()
+                getLightsFromDBToMainWindow()
             }
         },
         {
-            label: 'Update2',
+            label: 'clear',
             click() {
-                const light = {
-                    id: 123,
-                    duskSensorReadings: 2,
-                    duskThreshold: 222,
-                    led: false,
-                    mode: 'TIME_ONLY',
-                    turnOffTime: {
-                        hour: 12,
-                        minute: 12
-                    },
-                    turnOnTime: {
-                        hour: 13,
-                        minute: 13
-                    }
-                }
-                updateLight(light)
+                clearLightsFromMainWindow()
             }
         },
         {
@@ -131,7 +155,7 @@ app.on('ready', function () {
     })
 
     Menu.setApplicationMenu(menu)
-
+    getLightsFromDBToMainWindow()
 
 })
 
